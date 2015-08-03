@@ -6,18 +6,16 @@
 //  Copyright (c) 2015 Vladimír Čalfa. All rights reserved.
 //
 
-#import "EmotiKeyboard.h"
-#import <QuartzCore/QuartzCore.h>
+#import "CMEmoticonsKeyboard.h"
 #import "CMEmoticonsScanner.h"
 
-@interface EmotiKeyboard () 
+@interface CMEmoticonsKeyboard () 
 
-
-
+@property (nonatomic, weak) id<UITextViewDelegate> oldTextViewDelegate;
 
 @end
 
-@implementation EmotiKeyboard
+@implementation CMEmoticonsKeyboard
 
 - (id)init {
 
@@ -32,77 +30,28 @@
     self = [super initWithFrame:frame];
     self.backgroundColor = [UIColor colorWithWhite:0.91 alpha:1.0];
 
-    NSDictionary *d = @{
-      
-      @(0xe600): @":-)",
-      @(0xe601): @":-D",
-      @(0xe602): @"^^",
-      @(0xe603): @"^D",
-      @(0xe604): @":*",
-      @(0xe605): @":P",
-      
-      @(0xe606): @";)",
-      @(0xe607): @";D",
-      @(0xe608): @":rofl:",
-      @(0xe609): @":\">",
-      @(0xe60a): @"8-)",
-      @(0xe60b): @"8|",
-      
-      @(0xe60c): @">(",
-      @(0xe60d): @"°-|",
-      @(0xe60e): @"D-:",
-      @(0xe60f): @":o",
-      @(0xe610): @"X-|",
-      @(0xe611): @":x",
-      
-      @(0xe612): @":|",
-      @(0xe613): @":s",
-      @(0xe614): @":(",
-      @(0xe615): @">:(",
-      @(0xe616): @"D:(",
-      @(0xe617): @":'("
-      
-      };
-    
-    NSDictionary *d2 = @{
-                        
-                        @":-)"  : @(0xe600),
-                        @":-D"  : @(0xe601),
-                        @"^^"   : @(0xe602),
-                        @"^D"   : @(0xe603),
-                        @":*"   : @(0xe604),
-                        @":P"   : @(0xe605),
-                        
-                        @";)"   : @(0xe606),
-                        @";D"   : @(0xe607),
-                        @":rofl:": @(0xe608),
-                        @":\">" : @(0xe609),
-                        @"8-)"  : @(0xe60a),
-                        @"8|"   : @(0xe60b),
-                        
-                        @">("   : @(0xe60c),
-                        @"°-|"  : @(0xe60d),
-                        @"D-:"  : @(0xe60e),
-                        @":o"   : @(0xe60f),
-                        @"X-|"  : @(0xe610),
-                        @":x"   : @(0xe611),
-                        
-                        @":|"   : @(0xe612),
-                        @":s"   : @(0xe613),
-                        @":("   : @(0xe614),
-                        @">:("  : @(0xe615),
-                        @"D:("  : @(0xe616),
-                        @":'("  : @(0xe617)
-                        
-                        };
     return self;
 }
 
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t pred = 0;
+    __strong static id _sharedObject = nil;
+    
+    dispatch_once(&pred, ^{
+        _sharedObject = [self defaultInstance];
+    });
+    
+    return _sharedObject;
+}
+
+
 + (instancetype)defaultInstance {
     
-    EmotiKeyboard *defaultInst = [[self alloc] init];
+    CMEmoticonsKeyboard *defaultInst = [[self alloc] init];
     
     defaultInst.emoticonFont = [UIFont fontWithName:@"cm-emoticons" size:19];
+    defaultInst.textFont = [UIFont systemFontOfSize:17.0];
     
     NSArray *buttonTitles1 = @[ @"\ue600", @"\ue601", @"\ue602", @"\ue603", @"\ue604", @"\ue605"];
     NSArray *buttonTitles2 = @[ @"\ue606", @"\ue607", @"\ue608", @"\ue609", @"\ue60a", @"\ue60b"];
@@ -115,13 +64,11 @@
     UIView *row4 = [defaultInst createRowOfButtons:buttonTitles4];
     UIView *row5 = [defaultInst createSystemButtons];
     
-    
     [defaultInst addSubview:row1];
     [defaultInst addSubview:row2];
     [defaultInst addSubview:row3];
     [defaultInst addSubview:row4];
     [defaultInst addSubview:row5];
-    
     
     [defaultInst addConstraintsToInputView:defaultInst rowViews:@[row1, row2, row3, row4, row5]];
     
@@ -130,72 +77,16 @@
 
 - (void)setTextView:(UITextView *)textView {
     
-    [(UITextView *)textView setInputView:self];
-
+    [textView setInputView:self];
+    self.oldTextViewDelegate = textView.delegate != self ? textView.delegate :nil;
+    textView.delegate = self;
+    
     _textView = textView;
-}
-
-- (BOOL)textView:(UITextView *)textField shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string {
-
-    
-    if ([string isEqualToString:@"\n"]) {
-        return YES;
-    }
-    
-    if (range.location == -1) {
-        return NO;
-    }
-    
-    if (string.length > 0) {
-         NSAttributedString *s = [[NSAttributedString alloc] initWithString: string attributes:@{NSFontAttributeName: self.normalFont}];
-        
-        NSMutableAttributedString *ms =[[NSMutableAttributedString alloc] initWithAttributedString:textField.attributedText];
-        
-        UITextRange *selectedRange = [textField selectedTextRange];
-        UITextPosition *startPos = selectedRange.start;
-        NSInteger idx = [textField offsetFromPosition:textField.beginningOfDocument toPosition:startPos];
-        NSInteger idx2 = [textField offsetFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
-        UITextPosition *newPosition;
-        
-        if (range.length == 0 && range.location == idx2) {
-        
-            [ms appendAttributedString: s];
-
-            textField.attributedText = ms;
-        }
-        else {
-            [ms insertAttributedString:s atIndex:idx];
-            newPosition = [textField positionFromPosition:selectedRange.start offset:1];
-            UITextRange *newRange = [textField textRangeFromPosition:newPosition toPosition:newPosition];
-            
-            textField.attributedText = ms;
-            [textField setSelectedTextRange:newRange];
-
-        }
-        
-    } else {
-        NSMutableAttributedString *ms =[[NSMutableAttributedString alloc] initWithAttributedString:textField.attributedText];
-        [ms replaceCharactersInRange:range withString:string];
-        
-        UITextRange *selectedRange = [textField selectedTextRange];
-      
-        UITextPosition *newPosition = [textField positionFromPosition:selectedRange.start offset:-1];
-        UITextRange *newRange = [textField textRangeFromPosition:newPosition toPosition:newPosition];
-        
-        textField.attributedText = ms;
-        [textField setSelectedTextRange:newRange];
-    }
-    
-    //NSAttributedString *as = [CMEmoticonsScanner attributedStringFromDataMessage:[textField.attributedText string] stringAttributes:@{}];
-    //textField.attributedText = as;
-    
-    return NO;
 }
 
 - (IBAction)keyPressed:(UIButton *)sender {
     
     NSString *character = [sender titleForState:UIControlStateNormal];
-    
 
     NSMutableAttributedString *ms = [[NSMutableAttributedString alloc] initWithAttributedString:self.textView.attributedText];
     NSAttributedString *s = [[NSAttributedString alloc] initWithString: character attributes:@{NSFontAttributeName: self.emoticonFont}];
@@ -233,13 +124,13 @@
     
    // [self textField: (UITextField*)self.textView shouldChangeCharactersInRange:NSMakeRange(idx-1, 1) replacementString:@""];
     
-    [self textView: (UITextView*)self.textView shouldChangeTextInRange:NSMakeRange(idx-1, 1) replacementText:@""];
+    [self textView: self.textView shouldChangeTextInRange:NSMakeRange(idx-1, 1) replacementText:@""];
 }
 
 - (void)switchKeyboard:(UIButton*)sender {
     
-    [(UITextField *)self.textView setInputView:nil];
-    [(UITextField *)self.textView reloadInputViews];
+    [self.textView setInputView:nil];
+    [self.textView reloadInputViews];
 }
 
 #pragma mark - Methods that create custom keyboard UI
@@ -249,7 +140,6 @@
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.frame = CGRectMake(0, 0, 40, 40);
     button.layer.cornerRadius = 4.0;
-    
     
     [button setTitle:title forState:UIControlStateNormal];
     [button sizeToFit];
@@ -391,8 +281,6 @@
         }
         [inputView addConstraint:topConstraint];
         
-        
-        
         NSLayoutConstraint *bottomConstraint;
         
         if (index == rowViews.count - 1) {
@@ -405,7 +293,6 @@
         }
         
         [inputView addConstraint:bottomConstraint];
-        
         
         index++;
     }
@@ -440,6 +327,89 @@
 }
 
 
+#pragma mark - UITextViewDelegate 
 
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+    return self.oldTextViewDelegate != nil ? [self.oldTextViewDelegate textViewShouldBeginEditing:textView] : YES;
+}
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
+    return self.oldTextViewDelegate != nil ? [self.oldTextViewDelegate textViewShouldEndEditing:textView] : YES;
+}
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    [self.oldTextViewDelegate textViewDidBeginEditing:textView];
+}
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    [self.oldTextViewDelegate textViewDidEndEditing:textView];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    
+    if ([text isEqualToString:@"\n"]) {
+        return YES;
+    }
+    
+    if (range.location == -1) {
+        return NO;
+    }
+    
+    if (text.length > 0) {
+        NSAttributedString *s = [[NSAttributedString alloc] initWithString: text attributes:@{NSFontAttributeName: self.textFont}];
+        
+        NSMutableAttributedString *ms =[[NSMutableAttributedString alloc] initWithAttributedString:textView.attributedText];
+        
+        UITextRange *selectedRange = [textView selectedTextRange];
+        UITextPosition *startPos = selectedRange.start;
+        NSInteger idx = [textView offsetFromPosition:textView.beginningOfDocument toPosition:startPos];
+        NSInteger idx2 = [textView offsetFromPosition:textView.beginningOfDocument toPosition:textView.endOfDocument];
+        UITextPosition *newPosition;
+        
+        if (range.length == 0 && range.location == idx2) {
+            
+            [ms appendAttributedString: s];
+            
+            textView.attributedText = ms;
+        }
+        else {
+            [ms insertAttributedString:s atIndex:idx];
+            newPosition = [textView positionFromPosition:selectedRange.start offset:1];
+            UITextRange *newRange = [textView textRangeFromPosition:newPosition toPosition:newPosition];
+            
+            textView.attributedText = ms;
+            [textView setSelectedTextRange:newRange];
+            
+        }
+    } else {
+        NSMutableAttributedString *ms =[[NSMutableAttributedString alloc] initWithAttributedString:textView.attributedText];
+        [ms replaceCharactersInRange:range withString:text];
+        
+        UITextRange *selectedRange = [textView selectedTextRange];
+        
+        UITextPosition *newPosition = [textView positionFromPosition:selectedRange.start offset:-1];
+        UITextRange *newRange = [textView textRangeFromPosition:newPosition toPosition:newPosition];
+        
+        textView.attributedText = ms;
+        [textView setSelectedTextRange:newRange];
+    }
+    
+    //NSAttributedString *as = [CMEmoticonsScanner attributedStringFromDataMessage:[textField.attributedText string] stringAttributes:@{}];
+    //textField.attributedText = as;
+    
+    [self.oldTextViewDelegate textView:textView shouldChangeTextInRange:range replacementText:text];
+    
+    return NO;
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+    [self.oldTextViewDelegate textViewDidChange:textView];
+}
+- (void)textViewDidChangeSelection:(UITextView *)textView {
+    [self.oldTextViewDelegate textViewDidChangeSelection:textView];
+}
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
+    return [self.oldTextViewDelegate textView:textView shouldInteractWithURL:URL inRange:characterRange];
+}
+- (BOOL)textView:(UITextView *)textView shouldInteractWithTextAttachment:(NSTextAttachment *)textAttachment inRange:(NSRange)characterRange {
+    return [self.oldTextViewDelegate textView:textView shouldInteractWithTextAttachment:textAttachment inRange:characterRange];
+}
 
 @end

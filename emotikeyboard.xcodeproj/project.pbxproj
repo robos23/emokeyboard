@@ -16,7 +16,7 @@
 		20EEAC231B6646F600D4EC54 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20EEAC221B6646F600D4EC54 /* Images.xcassets */; };
 		20EEAC261B6646F600D4EC54 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20EEAC241B6646F600D4EC54 /* LaunchScreen.xib */; };
 		20EEAC321B6646F600D4EC54 /* emotikeyboardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EEAC311B6646F600D4EC54 /* emotikeyboardTests.m */; };
-		20EEAC3F1B66571C00D4EC54 /* EmotiKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EEAC3E1B66571C00D4EC54 /* EmotiKeyboard.m */; };
+		20EEAC3F1B66571C00D4EC54 /* CMEmoticonsKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EEAC3E1B66571C00D4EC54 /* CMEmoticonsKeyboard.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,8 +46,8 @@
 		20EEAC2B1B6646F600D4EC54 /* emotikeyboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = emotikeyboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20EEAC301B6646F600D4EC54 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		20EEAC311B6646F600D4EC54 /* emotikeyboardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = emotikeyboardTests.m; sourceTree = "<group>"; };
-		20EEAC3D1B66571C00D4EC54 /* EmotiKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmotiKeyboard.h; sourceTree = "<group>"; };
-		20EEAC3E1B66571C00D4EC54 /* EmotiKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmotiKeyboard.m; sourceTree = "<group>"; };
+		20EEAC3D1B66571C00D4EC54 /* CMEmoticonsKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMEmoticonsKeyboard.h; sourceTree = "<group>"; };
+		20EEAC3E1B66571C00D4EC54 /* CMEmoticonsKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMEmoticonsKeyboard.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +97,8 @@
 				20EEAC221B6646F600D4EC54 /* Images.xcassets */,
 				20EEAC241B6646F600D4EC54 /* LaunchScreen.xib */,
 				20EEAC151B6646F600D4EC54 /* Supporting Files */,
-				20EEAC3D1B66571C00D4EC54 /* EmotiKeyboard.h */,
-				20EEAC3E1B66571C00D4EC54 /* EmotiKeyboard.m */,
+				20EEAC3D1B66571C00D4EC54 /* CMEmoticonsKeyboard.h */,
+				20EEAC3E1B66571C00D4EC54 /* CMEmoticonsKeyboard.m */,
 				2076BA2E1B66788F00A3116A /* cm-emoticons.otf */,
 				20DCF3341B67B0D200613E82 /* CMEmoticonsScanner.h */,
 				20DCF3351B67B0D200613E82 /* CMEmoticonsScanner.m */,
@@ -234,7 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20EEAC1E1B6646F600D4EC54 /* ViewController.m in Sources */,
-				20EEAC3F1B66571C00D4EC54 /* EmotiKeyboard.m in Sources */,
+				20EEAC3F1B66571C00D4EC54 /* CMEmoticonsKeyboard.m in Sources */,
 				20DCF3361B67B0D200613E82 /* CMEmoticonsScanner.m in Sources */,
 				20EEAC1B1B6646F600D4EC54 /* AppDelegate.m in Sources */,
 				20EEAC181B6646F600D4EC54 /* main.m in Sources */,
